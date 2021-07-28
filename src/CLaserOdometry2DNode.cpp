@@ -78,8 +78,10 @@ CLaserOdometry2DNode::CLaserOdometry2DNode() :
   pn.param<std::string>("odom_frame_id", odom_frame_id, "/odom");
   pn.param<bool>("publish_tf", publish_tf, true);
   pn.param<std::string>("init_pose_from_topic", init_pose_from_topic, "/base_pose_ground_truth");
-  pn.param<double>("freq",freq,10.0);
+  pn.param<double>("freq",freq,20.0);
   pn.param<bool>("verbose", verbose, true);
+  ROS_INFO("freq set to %f", freq);
+
 
   //Publishers and Subscribers
   //--------------------------
@@ -169,7 +171,7 @@ void CLaserOdometry2DNode::process(const ros::TimerEvent&)
   }
   else
   {
-    ROS_WARN("Waiting for laser_scans....") ;
+    ROS_WARN_DELAYED_THROTTLE(10, "Waiting for laser_scans....") ;
   }
 }
 
@@ -218,7 +220,7 @@ void CLaserOdometry2DNode::publish()
   //---------------------------------------
   if (publish_tf)
   {
-    ROS_DEBUG("[rf2o] Publishing TF: [base_link] to [odom]");
+    ROS_DEBUG("[rf2o] Publishing TF: [%s] to [%s]",odom_frame_id, base_frame_id );
     geometry_msgs::TransformStamped odom_trans;
     odom_trans.header.stamp = last_odom_time;
     odom_trans.header.frame_id = odom_frame_id;
